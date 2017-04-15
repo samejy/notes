@@ -1,0 +1,74 @@
+
+* Setup StumpWM
+
+These are notes from getting StumpWM set up on a fresh Lubuntu install, on a Dell Inspiron 14 3452 laptop.
+
+** Prerequisites
+
+- sbcl
+  - install through apt-get
+- quicklisp
+  - [[https://www.quicklisp.org/beta/][Installation instructions here]]
+
+** Installation
+
+Install StumpWM via quicklisp
+  - =(ql:quickload :stumpwm)=
+  - You could also get the latest source and build that
+
+Add a file /usr/share/xsessions/stumpwm.desktop:
+
+#+BEGIN_SRC shell 
+[Desktop Entry] 
+Encoding=UTF-8 
+Type=XSession 
+Exec=/usr/bin/stumpwm 
+TryExec=stumpwm 
+Name=StumpWM 
+Comment=Stump window manager
+#+END_SRC
+
+This should add StumpWM to the options at the Ubuntu log in screen
+Create a script ~/stumpwm/stumpwm:
+
+#+BEGIN_SRC shell
+#!/bin/bash
+exec sbcl -load /home/username/startstumpwm
+#+END_SRC
+
+Make it executable:
+
+#+BEGIN_SRC shell
+chmod a+x ~/stumpwm/stumpwm
+#+END_SRC
+
+Symlink it to /usr/bin
+
+#+BEGIN_SRC shell
+sudo ln ~/stumpwm/stumpwm /usr/bin/stumpwm
+#+END_SRC
+
+Create a script ~/startstumpwm
+
+#+BEGIN_SRC lisp
+(require :stumpwm)
+(stumpwm:stumpwm)
+#+END_SRC
+
+You should now be able to log out, and select StumpWM as the window manager.
+
+** Extras
+
+To add contrib modules
+
+#+BEGIN_SRC
+git clone https://github.com/stumpwm/stumpwm-contrib.git ~/stumpwm/contrib
+#+END_SRC
+
+To load a module add =(load-module "module-name")= to your .stumpwmrc file, use =(set-module-dir "path")= to specify where you downloaded the contrib directory.
+
+** See also
+
+- [[http://www.xsteve.at/prg/stumpwm/][Guide to setup .stumpwmrc]]
+- [[http://www.kaashif.co.uk/2015/06/28/hacking-stumpwm-with-common-lisp/][Hacking on StumpWM]]
+- [[https://github.com/stumpwm/stumpwm/wiki/Modules][Modules wiki]]
